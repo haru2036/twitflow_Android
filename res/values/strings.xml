@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">twit-flow for Android</string>
+    <string name="plz_auth">このアプリケーションを利用するにはTwitterとの認証が必要です。下の認証ボタンを押してください。</string>
+    <string name="doauth">認証を実行</string>
+    <string name="compauth">アカウントの認証が完了しました！下のボタンから利用を開始できます！</string>
+    <string name="start">Start</string>
+</resources>
