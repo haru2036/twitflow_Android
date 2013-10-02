@@ -22,7 +22,6 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
 
         getHolder().addCallback(this);
     }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //To change body of implemented methods use File | Settings | File Templates.
