@@ -5,4 +5,8 @@
     <string name="doauth">認証を実行</string>
     <string name="compauth">アカウントの認証が完了しました！下のボタンから利用を開始できます！</string>
     <string name="start">Start</string>
+    <string name="authnumber">暗証番号</string>
+    <string name="authstep2">次に、TwitterのWebページに表示された暗証番号を入力してください。</string>
+    <string name="getat">送信</string>
+    <string name="savedat">認証情報を保存しました。</string>
 </resources>

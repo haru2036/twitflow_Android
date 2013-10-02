@@ -8,55 +8,86 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import twitter4j.TwitterException;
-import twitter4j.auth.OAuthAuthorization;
+import android.widget.EditText;
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-import twitter4j.conf.Configuration;
-import twitter4j.conf.ConfigurationContext;
 
-/**
- * Created with IntelliJ IDEA.
- * User: haruka
- * Date: 13/10/02
- * Time: 0:05
- * To change this template use File | Settings | File Templates.
- */
+import java.util.HashMap;
+import java.util.Map;
+
 public class authenticationActivity extends Activity{
 
     Button authbtn;
-    OAuthAuthorization oauthobj = null;
+    Button getatbtn;
+    EditText editText;
     RequestToken reqtoken = null;
+
+    final AsyncTwitterFactory factory = new AsyncTwitterFactory();
+    final AsyncTwitter twitter = factory.getInstance();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.authenticationactivity);
+
         authbtn = (Button)findViewById(R.id.button);
+        getatbtn = (Button)findViewById(R.id.button1);
+        editText = (EditText)findViewById(R.id.editText);
+
+        Map<String,String> consmap = getConsumer();
+
+        twitter.addListener(listener);
+        twitter.setOAuthConsumer(consmap.get("consumer_key"),consmap.get("consumer_secret"));
+        twitter.getOAuthRequestTokenAsync();
+
         authbtn.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
-                doOAuth();
+                final Intent reqintent = new Intent(Intent.ACTION_VIEW,Uri.parse(reqtoken.getAuthorizationURL()));
+                startActivity(reqintent);
             }
 
         });
+
+        getatbtn.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String pin = editText.getText().toString();
+                twitter.getOAuthAccessTokenAsync(reqtoken, pin);
+            }
+        });
     }
-    //ToDo:android.os.NetworkOnMainThreadException吐かないようにする
-    public void doOAuth(){
-        Configuration conf = ConfigurationContext.getInstance();
-        oauthobj = new OAuthAuthorization(conf);
+
+    private Map<String,String> getConsumer(){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
         String conskey = pref.getString("CK", null);
         String conssec = pref.getString("CS", null);
         if (conskey == null || conssec == null){
             Log.d("twitter", "consumer is null!");
-            return;
+            return null;
         }
-        oauthobj.setOAuthConsumer(conskey, conssec);
-        try{
-            reqtoken = oauthobj.getOAuthRequestToken("Callback://callbackActivity");
-        } catch(TwitterException e){
-            e.printStackTrace();
-        }
-        String callbackuri = reqtoken.getAuthenticationURL();
-        startActivityForResult(new Intent(Intent.ACTION_VIEW , Uri.parse(callbackuri)), 0);
+        Map<String,String> consmap = new HashMap<String, String>();
+        consmap.put("consumer_key",conskey);
+        consmap.put("consumer_secret",conssec);
+        return consmap;
     }
+
+    private final TwitterListener listener = new TwitterAdapter(){
+        @Override
+        public void gotOAuthRequestToken(RequestToken token){
+            reqtoken = token;
+        }
+
+        @Override
+        public void gotOAuthAccessToken(AccessToken atoken){
+            final Intent intent = new Intent();
+            intent.putExtra("access_token", atoken.getToken());
+            intent.putExtra("access_secret", atoken.getTokenSecret());
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
+    };
+
+
+
 }
