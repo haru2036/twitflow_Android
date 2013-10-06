@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.Toast;
 import twitter4j.*;
@@ -16,6 +15,7 @@ public class mainActivity extends Activity {
     String CK, CS, AT, AS;
     TwitterStream twitterStream = null;
     surfaceView_haru surface;
+    twitter4jUser t4jusr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,11 +82,10 @@ public class mainActivity extends Activity {
         AS = pref.getString("AS", null);
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
-        TwitterStreamFactory twitterStreamFactory = new TwitterStreamFactory(conf);
-        twitterStream = twitterStreamFactory.getInstance();
-        twitterStream.addListener(new twStreamlistener());
-        twitterStream.user();
-    }
+        t4jusr = new twitter4jUser(conf);
+
+        }
+
 
     public void openAuthActivity(){
         Intent intent = new Intent(this, authenticationActivity.class);
@@ -97,15 +96,6 @@ public class mainActivity extends Activity {
         SurfaceView sv = (SurfaceView) findViewById(R.id.surfaceView);
         surface = new surfaceView_haru(this, sv);
     }
-    public class twStreamlistener extends UserStreamAdapter{
-        @Override
-        public void onStatus(Status status) {
-            Log.d("onstatus", status.getText());
-        }
 
-        @Override
-        public void onException(Exception e) {
-            Log.d("exception", e.toString());
-        }
-    }
+
 }
