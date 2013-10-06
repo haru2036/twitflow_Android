@@ -5,32 +5,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.widget.Toast;
-import twitter4j.Status;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.UserStreamAdapter;
+import twitter4j.*;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.util.ArrayList;
 
 public class mainActivity extends Activity {
     String CK, CS, AT, AS;
-    ArrayList<Status> timeline = new ArrayList<Status>();
     TwitterStream twitterStream = null;
+    surfaceView_haru surface;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
         getIsAuth();
-        setContentView(new surfaceView_haru(this));
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        twitterStream.cleanUp();
+        if(twitterStream !=null){
+            twitterStream.cleanUp();
+        }
     }
     private void getIsAuth(){
         boolean isTokenChanged = false;
@@ -49,12 +48,13 @@ public class mainActivity extends Activity {
         }
         pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
         if(!pref.contains("AT") || isTokenChanged){
-            Intent intent = new Intent(this, authenticationActivity.class);
-            startActivityForResult(intent,0);
+            openAuthActivity();
         }else{
+            initSurface();
             startStream();
         }
     }
+
     @Override
     public void onActivityResult(int requestCode,int resultCode, Intent data){
         if(resultCode == Activity.RESULT_OK){
@@ -64,6 +64,7 @@ public class mainActivity extends Activity {
 
         }
     }
+
     private void saveAT(String token, String secret){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow",MODE_PRIVATE);
         SharedPreferences.Editor peditor = pref.edit();
@@ -72,6 +73,7 @@ public class mainActivity extends Activity {
         peditor.commit();
         Toast.makeText(this, R.string.savedat, Toast.LENGTH_LONG).show();
     }
+
     private void startStream(){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
         CK = pref.getString("CK", null);
@@ -82,22 +84,28 @@ public class mainActivity extends Activity {
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
         TwitterStreamFactory twitterStreamFactory = new TwitterStreamFactory(conf);
         twitterStream = twitterStreamFactory.getInstance();
-        StreamListener streamListener = new StreamListener();
-        twitterStream.addListener(streamListener);
+        twitterStream.addListener(new twStreamlistener());
+        twitterStream.user();
     }
-    public class StreamListener extends UserStreamAdapter{
 
+    public void openAuthActivity(){
+        Intent intent = new Intent(this, authenticationActivity.class);
+        startActivityForResult(intent,0);
+    }
+
+    public void initSurface(){
+        SurfaceView sv = (SurfaceView) findViewById(R.id.surfaceView);
+        surface = new surfaceView_haru(this, sv);
+    }
+    public class twStreamlistener extends UserStreamAdapter{
         @Override
-        public void onStatus(Status status){
-            timeline.add(status);
-            if (timeline.size()>100){
-                timeline.remove(101);
-            }
+        public void onStatus(Status status) {
+            Log.d("onstatus", status.getText());
         }
 
         @Override
-        public void onException(Exception ex){
-            Log.d("exeption", ex.toString());
+        public void onException(Exception e) {
+            Log.d("exception", e.toString());
         }
     }
 }
