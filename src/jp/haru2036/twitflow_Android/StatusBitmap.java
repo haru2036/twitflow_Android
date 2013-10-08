@@ -10,7 +10,7 @@ public class StatusBitmap {
 
     Status status;
     Point wholeCoord;
-    Bitmap icon;
+    Bitmap icon = null;
 
     public StatusBitmap(Status importStatus, Point defaultCoord){
 

@@ -11,9 +11,8 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class mainActivity extends Activity {
+public class mainActivity extends Activity implements StatusInterfaceListener{
     String CK, CS, AT, AS;
-    TwitterStream twitterStream = null;
     surfaceView_haru surface;
     twitter4jUser t4jusr;
 
@@ -25,16 +24,16 @@ public class mainActivity extends Activity {
     }
 
     @Override
-    public void onPause(){
-        super.onPause();
-        if(twitterStream !=null){
-            twitterStream.cleanUp();
+    public void onDestroy(){
+        super.onDestroy();
+        if(t4jusr.twitterStream != null){
+            t4jusr = null;
         }
     }
     private void getIsAuth(){
         boolean isTokenChanged = false;
-        CK = "";
-        CS = "";
+        CK = "ao6TaGIRiBFDG0yp4UahQ";
+        CS = "4Q5k2ANhjRiFFpwLEiQ7PRoMgmIZIb78U6W6btq0rk";
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
         if(!pref.contains("CK")){
             if(!pref.getString("CK", "hoge").equals(CK)){
@@ -82,7 +81,8 @@ public class mainActivity extends Activity {
         AS = pref.getString("AS", null);
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
-        t4jusr = new twitter4jUser(conf);
+        t4jusr = new twitter4jUser(conf, this);
+        t4jusr.user();
 
         }
 
@@ -97,5 +97,9 @@ public class mainActivity extends Activity {
         surface = new surfaceView_haru(this, sv);
     }
 
+    @Override
+    public void onStatus(Status status) {
+        surface.onNewStatus(status);
+    }
 
 }

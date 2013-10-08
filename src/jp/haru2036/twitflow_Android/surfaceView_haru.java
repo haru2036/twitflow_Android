@@ -2,6 +2,7 @@ package jp.haru2036.twitflow_Android;
 
 import android.content.Context;
 import android.graphics.*;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import twitter4j.Status;
@@ -104,25 +105,29 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
         canvas.drawText(text, 0, text.length(), textPaint);
     }
 
-    public void renderTL(Canvas canvas){
-        ArrayList<StatusBitmap> tmplist = new ArrayList<StatusBitmap>();
+    public synchronized void renderTL(Canvas canvas){
+
+        ArrayList<StatusBitmap> tempList = new ArrayList<StatusBitmap>();
 
         for(StatusBitmap status : timeLine){
             renderStatus(status, canvas);
             status.wholeCoord.y = status.wholeCoord.y - perFrameMove;
-            tmplist.add(status);
+            tempList.add(status);
         }
+        timeLine = tempList;
 
-        timeLine = tmplist;
+        notifyAll();
     }
 
-    public void onNewStatus(Status status){
+    public synchronized void onNewStatus(Status status){
+        Log.d("onstatus", status.getText());
         Point coord = new Point(0, dispSize.y);
         timeLine.add(new StatusBitmap(status, coord));
         if (timeLine.size() <= 100) {
             return;
         }
         timeLine.remove(101);
+        notifyAll();
     }
 
     @Override
