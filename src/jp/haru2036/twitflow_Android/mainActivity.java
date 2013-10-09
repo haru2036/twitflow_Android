@@ -32,8 +32,8 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
     }
     private void getIsAuth(){
         boolean isTokenChanged = false;
-        CK = "ao6TaGIRiBFDG0yp4UahQ";
-        CS = "4Q5k2ANhjRiFFpwLEiQ7PRoMgmIZIb78U6W6btq0rk";
+        CK = "";
+        CS = "";
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
         if(!pref.contains("CK")){
             if(!pref.getString("CK", "hoge").equals(CK)){
@@ -60,8 +60,8 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
             String token = data.getStringExtra("access_token");
             String secret = data.getStringExtra("access_secret");
             saveAT(token,secret);
-
         }
+        getIsAuth();
     }
 
     private void saveAT(String token, String secret){

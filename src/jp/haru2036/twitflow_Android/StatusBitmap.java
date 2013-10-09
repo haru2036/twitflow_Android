@@ -9,8 +9,17 @@ import com.loopj.android.http.*;
 public class StatusBitmap {
 
     Status status;
-    Point wholeCoord;
     Bitmap icon = null;
+    private Point wholeCoord;
+
+    public Point getCoord(){
+        return wholeCoord;
+    }
+
+    public Point offsetYCoord(int offset){
+        wholeCoord.y = wholeCoord.y - offset;
+        return wholeCoord;
+    }
 
     public StatusBitmap(Status importStatus, Point defaultCoord){
 
