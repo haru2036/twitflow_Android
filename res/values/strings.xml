@@ -9,4 +9,6 @@
     <string name="authstep2">次に、TwitterのWebページに表示された暗証番号を入力してください。</string>
     <string name="getat">送信</string>
     <string name="savedat">認証情報を保存しました。</string>
+    <string name="needConfig">Daydream機能を利用するには、まず本体アプリケーションでの設定が必要です。FlowStreamを起動して設定をしてください。</string>
+    <string name="needConfigTitle">アカウント設定が必要です</string>
 </resources>

@@ -58,7 +58,6 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         isRunning = false;
-        while(thread.isAlive());
     }
 
 
@@ -122,7 +121,7 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
                 String line = text.substring(breakIdx, breakIdx + lineBreak);
                 canvas.drawText(line, (float)objX, (float)renderdPos, textPaint);
                 breakIdx +=lineBreak;
-                renderdPos += textSize;
+                renderdPos += textSize + margin;
             }
         }
         if(lineBreak == 0){
@@ -132,21 +131,25 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-    public synchronized void renderTL(Canvas canvas){
-        canvas.drawColor(bgColor);
+    public synchronized boolean renderTL(Canvas canvas){
+        boolean isContinue = false;
+        if(isRunning){
+            isContinue = true;
+            canvas.drawColor(bgColor);
 
-        ArrayList<StatusBitmap> tempList = new ArrayList<StatusBitmap>();
+            ArrayList<StatusBitmap> tempList = new ArrayList<StatusBitmap>();
 
-        for(StatusBitmap status : timeLine){
-            renderStatus(status, canvas);
-            status.offsetYCoord(perFrameMove);
-            if (status.getCoord().y > -100) {
-                tempList.add(status);
+            for(StatusBitmap status : timeLine){
+                renderStatus(status, canvas);
+                status.offsetYCoord(perFrameMove);
+                if (status.getCoord().y > -300) {
+                    tempList.add(status);
+                }
             }
+            timeLine = tempList;
         }
-        timeLine = tempList;
-
         notifyAll();
+        return isContinue;
     }
 
     public synchronized void onNewStatus(Status status){
@@ -158,9 +161,13 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void run(){
+
         while(isRunning){
             Canvas canvas = holder.lockCanvas();
-            renderTL(canvas);
+            boolean isContinue = renderTL(canvas);
+            if(!isContinue){
+                break;
+            }
             holder.unlockCanvasAndPost(canvas);
         }
     }

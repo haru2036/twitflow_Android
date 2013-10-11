@@ -25,9 +25,34 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(t4jusr != null){
+            t4jusr.cleanUp();
+            t4jusr = null;
+        }
+    }
+    @Override
     public void onDestroy(){
         super.onDestroy();
-        if(t4jusr.twitterStream != null){
+        if(t4jusr!= null){
+            t4jusr.cleanUp();
+            t4jusr = null;
+        }
+        if(surface != null){
+            surface.isRunning = false;
+        }
+    }
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(t4jusr != null){
+            t4jusr.cleanUp();
             t4jusr = null;
         }
     }
