@@ -17,7 +17,6 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
     int margin = 1;
     boolean isRunning = false;
     Thread thread;
-    boolean isAdded = false;
 
 
     private int bgColor, textColor, subColor;
@@ -35,7 +34,7 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
         userNameSize = 22;
         timeAndViaSize = 33;
         iconSize = 100;
-        margin = 1;
+        margin = 5;
         perFrameMove = 5;
         bgColor = Color.LTGRAY;
         textColor = Color.BLACK;
@@ -49,9 +48,6 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
         dispSize = new Point(frame.width(), frame.height());
         thread = new Thread(this);
         thread.start();
-
-
-
     }
 
     @Override
@@ -97,26 +93,44 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
         String names = user.getName() + " @" + user.getScreenName();
 
         Rect boundRect = new Rect();
-        namePaint.getTextBounds(names, 0, names.length(), boundRect);
-        Paint.FontMetrics fontMetrics = namePaint.getFontMetrics();
-        int fmHeight = (int)(Math.abs(fontMetrics.top) + fontMetrics.bottom);
+        namePaint.getTextBounds(names,0,names.length(),boundRect);
+
+        Paint.FontMetrics nameFontMetrics = namePaint.getFontMetrics();
+        int fmHeight = (int)(Math.abs(nameFontMetrics.top) + nameFontMetrics.bottom);
 
         canvas.drawText(names, (float)objX, (float)objY, namePaint);
 
         objY = objY + fmHeight + margin;
 
 
+        String text = status.status.getText();
+
         Paint textPaint = new Paint();
         textPaint.setColor(textColor);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(textSize);
 
-        String text = status.status.getText();
-        canvas.drawText(text, (float)objX, (float)objY, textPaint);
+        int textWidth = dispSize.x - objX ;
+        int lineBreak = textPaint.breakText(text, true, textWidth, null);
+        int breakIdx = 0;
+        int renderdPos = objY;
 
-
+        while(lineBreak != 0){
+            String measure = text.substring(breakIdx);
+            lineBreak = textPaint.breakText(measure, true, textWidth, null);
+            if(lineBreak != 0){
+                String line = text.substring(breakIdx, breakIdx + lineBreak);
+                canvas.drawText(line, (float)objX, (float)renderdPos, textPaint);
+                breakIdx +=lineBreak;
+                renderdPos += textSize;
+            }
+        }
+        if(lineBreak == 0){
+            canvas.drawText(text, (float)objX, (float)objY, textPaint);
+        }
 
     }
+
 
     public synchronized void renderTL(Canvas canvas){
         canvas.drawColor(bgColor);
@@ -126,7 +140,9 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
         for(StatusBitmap status : timeLine){
             renderStatus(status, canvas);
             status.offsetYCoord(perFrameMove);
-            tempList.add(status);
+            if (status.getCoord().y > -100) {
+                tempList.add(status);
+            }
         }
         timeLine = tempList;
 
@@ -134,15 +150,9 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public synchronized void onNewStatus(Status status){
-        //デバッグ用にフラグで１ツイートしか読まないように鳴ってる
-        isAdded = true;
         Log.d("onstatus", status.getText());
         Point coord = new Point(0, dispSize.y);
         timeLine.add(new StatusBitmap(status, coord));
-        if (timeLine.size() <= 100) {
-            return;
-        }
-        timeLine.remove(101);
         notifyAll();
     }
 

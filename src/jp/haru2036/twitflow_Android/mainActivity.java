@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.SurfaceView;
+import android.view.Window;
 import android.widget.Toast;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
