@@ -2,6 +2,7 @@ package jp.haru2036.twitflow_Android;
 
 import android.content.Context;
 import android.graphics.*;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,6 +18,7 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
     int margin = 1;
     boolean isRunning = false;
     Thread thread;
+    Bitmap twitterLogo;
 
 
     private int bgColor, textColor, subColor;
@@ -26,19 +28,20 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
 
 
 
-    public surfaceView_haru(Context context, SurfaceView sv){
+    public surfaceView_haru(Context context, SurfaceView sv, settings setting){
         super(context);
         holder = sv.getHolder();
         holder.addCallback(this);
-        textSize = 44;
-        userNameSize = 22;
-        timeAndViaSize = 33;
-        iconSize = 100;
-        margin = 5;
-        perFrameMove = 5;
-        bgColor = Color.LTGRAY;
-        textColor = Color.BLACK;
-        subColor = Color.GRAY;
+        twitterLogo = BitmapFactory.decodeResource(getResources(), R.drawable.twitter);
+        textSize = setting.textSize;
+        userNameSize = setting.userNameSize;
+        timeAndViaSize = setting.timeAndViaSize;
+        iconSize = setting.iconSize;
+        margin = setting.margin;
+        perFrameMove = setting.perFrameMove;
+        bgColor = setting.bgColor;
+        textColor = setting.textColor;
+        subColor = setting.subColor;
 
     }
     @Override
@@ -120,7 +123,7 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
             if(lineBreak != 0){
                 String line = text.substring(breakIdx, breakIdx + lineBreak);
                 canvas.drawText(line, (float)objX, (float)renderdPos, textPaint);
-                breakIdx +=lineBreak;
+                breakIdx += lineBreak;
                 renderdPos += textSize + margin;
             }
         }
@@ -130,12 +133,42 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
 
     }
 
+    public void renderLogoAndTime(Canvas canvas){
+
+        Paint logoPaint = new Paint();
+        logoPaint.setAntiAlias(true);
+        int width = twitterLogo.getWidth();
+        int height = twitterLogo.getHeight();
+        int dispX = dispSize.x - width;
+        int dispY = dispSize.y - height;
+
+        Time time = new Time();
+        time.setToNow();
+        int minute = time.minute;
+
+        String minuteString = String.valueOf(minute);
+
+        if(minute<10){
+            minuteString = "0" + minute;
+        }
+        String timeNow = time.hour + ":" + minuteString;
+        Paint timePaint = new Paint();
+        timePaint.setAntiAlias(true);
+        timePaint.setTextSize(textSize);
+        timePaint.setColor(subColor);
+
+        canvas.drawText(timeNow, 0, 35, timePaint);
+        canvas.drawBitmap(twitterLogo, dispX, dispY, logoPaint);
+    }
+
 
     public synchronized boolean renderTL(Canvas canvas){
         boolean isContinue = false;
         if(isRunning){
             isContinue = true;
             canvas.drawColor(bgColor);
+
+            renderLogoAndTime(canvas);
 
             ArrayList<StatusBitmap> tempList = new ArrayList<StatusBitmap>();
 
@@ -168,7 +201,9 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
             if(!isContinue){
                 break;
             }
-            holder.unlockCanvasAndPost(canvas);
+            if(canvas != null){
+                holder.unlockCanvasAndPost(canvas);
+            }
         }
     }
 

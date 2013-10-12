@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.service.dreams.DreamService;
 import android.view.SurfaceView;
 import android.widget.Toast;
@@ -83,9 +84,26 @@ public class dayDreamService extends DreamService implements StatusInterfaceList
 
     public void initSurface(){
         SurfaceView sv = (SurfaceView) findViewById(R.id.surfaceView);
-        surface = new surfaceView_haru(this, sv);
+        surface = new surfaceView_haru(this, sv, loadSettingsFromPreference());
     }
 
+    public settings loadSettingsFromPreference(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        settings setting = new settings();
+
+        String colTheme = preferences.getString("colorTheme", "Light");
+
+        setting.setColorTheme(colTheme);
+
+        String textSize = preferences.getString("textSize", String.valueOf(44));
+        String userNameSize = preferences.getString("userNameSize", String.valueOf(44));
+
+        setting.textSize = Integer.parseInt(textSize);
+        setting.userNameSize = Integer.parseInt(userNameSize);
+
+        return setting;
+
+    }
     @Override
     public void onStatus(Status status) {
         surface.onNewStatus(status);

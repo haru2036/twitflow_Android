@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name=".mainActivity"
-                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+                  android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
                   android:configChanges="orientation|keyboardHidden"
                   android:label="@string/app_name">
             <intent-filter>
@@ -18,6 +18,10 @@
         <activity android:name=".authenticationActivity"
                   android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
                 />
+        <activity android:name=".preferenceActivity"
+                  android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+                  />
+        <activity android:name=".aboutAppActivity"/>
         <service
             android:name=".dayDreamService"
             android:icon="@drawable/ic_launcher"

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/app_name">
+        <ListPreference
+            android:key="colorTheme"
+            android:title="@string/theme"
+            android:summary="@string/pref_theme_summary"
+            android:dialogTitle="@string/pref_theme"
+            android:entries="@array/color_list_entries"
+            android:entryValues="@array/color_list_entryvalues" />
+        <EditTextPreference
+            android:key="textSize"
+            android:title="@string/text_size"
+            android:summary="@string/plz_size_px"
+            android:dialogTitle="@string/text_size" />
+        <EditTextPreference
+            android:key="userNameSize"
+            android:title="@string/sn_size"
+            android:summary="@string/plz_size_px"
+            android:dialogTitle="@string/sn_size" />
+    </PreferenceCategory>
+</PreferenceScreen>

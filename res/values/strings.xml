@@ -11,4 +11,17 @@
     <string name="savedat">認証情報を保存しました。</string>
     <string name="needConfig">Daydream機能を利用するには、まず本体アプリケーションでの設定が必要です。FlowStreamを起動して設定をしてください。</string>
     <string name="needConfigTitle">アカウント設定が必要です</string>
+    <string name="theme">テーマ</string>
+    <string name="pref_theme">テーマを選択してください</string>
+    <string name="pref_theme_summary">カラーテーマを選択</string>
+    <string name="text_size">テキストサイズ</string>
+    <string name="sn_size">スクリーンネームサイズ</string>
+    <string name="plz_size_px">サイズをpxで指定してください。</string>
+    <string name="openSettings">設定を開く</string>
+    <string name="openReAuth">再認証する</string>
+    <string name="aboutApp">このアプリケーションについて</string>
+    <string name="copyRight">Copyright 2013 haru2036</string>
+    <string name="licenseTwitter4J">このソフトウェアには、 Apache 2.0ライセンスで配布されている著作物が含まれています。</string>
+    <string name="needReboot">設定の適用には再起動が必要です。</string>
+
 </resources>
