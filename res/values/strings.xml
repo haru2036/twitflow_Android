@@ -17,11 +17,14 @@
     <string name="text_size">テキストサイズ</string>
     <string name="sn_size">スクリーンネームサイズ</string>
     <string name="plz_size_px">サイズをpxで指定してください。</string>
+    <string name="useFilterTimelineTitle">ハッシュタグモードにする</string>
+    <string name="filterTimelineQueryTitle">ハッシュタグ入力</string>
     <string name="openSettings">設定を開く</string>
     <string name="openReAuth">再認証する</string>
     <string name="aboutApp">このアプリケーションについて</string>
     <string name="copyRight">Copyright 2013 haru2036</string>
     <string name="licenseTwitter4J">このソフトウェアには、 Apache 2.0ライセンスで配布されている著作物が含まれています。</string>
     <string name="needReboot">設定の適用には再起動が必要です。</string>
+    <string name="queryIsNull">ハッシュタグモードに入ろうとしましたが、ハッシュタグの設定を読み込めなかったので通常モードで動作します。</string>
 
 </resources>

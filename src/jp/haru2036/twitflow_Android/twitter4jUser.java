@@ -125,6 +125,12 @@ public class twitter4jUser {
         twitterStream.user();
     }
 
+    public void filter(String[] track){
+        FilterQuery query = new FilterQuery();
+        query.track(track);
+        twitterStream.filter(query);
+    }
+
     public void onStatusAdapter(Status status){
         listener.onStatus(status);
     }

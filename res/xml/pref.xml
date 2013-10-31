@@ -19,5 +19,15 @@
             android:title="@string/sn_size"
             android:summary="@string/plz_size_px"
             android:dialogTitle="@string/sn_size" />
+        <CheckBoxPreference
+            android:key="useFilterStream"
+            android:title="@string/useFilterTimelineTitle"
+            />
+        <EditTextPreference
+            android:key="filterTimelineQuery"
+            android:title="@string/filterTimelineQueryTitle"
+            android:dialogTitle="@string/filterTimelineQueryTitle" />
+
+
     </PreferenceCategory>
 </PreferenceScreen>

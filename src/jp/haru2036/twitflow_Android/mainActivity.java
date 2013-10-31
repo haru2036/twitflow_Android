@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import android.app.ActionBar;
@@ -26,7 +27,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         setContentView(R.layout.main);
         actionBar = getActionBar();
         actionBar.hide();
-        getIsAuth();
+        checkIsAuthorized();
     }
 
     @Override
@@ -57,16 +58,51 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
             t4jusr = null;
         }
     }
-    private void getIsAuth(){
+
+    @Override
+    public void onActivityResult(int requestCode,int resultCode, Intent data){
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == 0){
+                String token = data.getStringExtra("access_token");
+                String secret = data.getStringExtra("access_secret");
+                saveAT(token,secret);
+                checkIsAuthorized();
+            }else if(requestCode == 1){
+                Toast.makeText(this, R.string.needReboot, Toast.LENGTH_LONG).show();
+            }else if(requestCode == 2){
+                String token = data.getStringExtra("access_token");
+                String secret = data.getStringExtra("access_secret");
+                saveAT(token,secret);
+                Toast.makeText(this, R.string.needReboot, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void checkIsAuthorized(){
         boolean isTokenChanged = false;
-        CK = "";
-        CS = "";
+        CK = getString(R.string.CK);
+        CS = getString(R.string.CS);
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+
+        SharedPreferences settingsPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean useHashTag = settingsPreferences.getBoolean("useFilterStream", false);
+
+        if(useHashTag){
+
+            String hashTagString = settingsPreferences.getString("filterTimelineQuery", null);
+            if(hashTagString != null){
+                startStream(hashTagString);
+            }else{
+                Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
+            }
+        }
+
         if(!pref.contains("CK")){
             if(!pref.getString("CK", "hoge").equals(CK)){
                 isTokenChanged = true;
                 SharedPreferences.Editor prefeditor = pref.edit();
-                //このCK/CSはミスってPushしたのでリセット済み
+
                 prefeditor.putString("CK",CK);
                 prefeditor.putString("CS",CS);
                 prefeditor.commit();
@@ -81,24 +117,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode,int resultCode, Intent data){
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == 0){
-                String token = data.getStringExtra("access_token");
-                String secret = data.getStringExtra("access_secret");
-                saveAT(token,secret);
-                getIsAuth();
-            }else if(requestCode == 1){
-                Toast.makeText(this, R.string.needReboot, Toast.LENGTH_LONG).show();
-            }else if(requestCode == 2){
-                String token = data.getStringExtra("access_token");
-                String secret = data.getStringExtra("access_secret");
-                saveAT(token,secret);
-                Toast.makeText(this, R.string.needReboot, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+
 
     private void saveAT(String token, String secret){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow",MODE_PRIVATE);
@@ -121,6 +140,21 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         t4jusr.user();
 
         }
+
+    private void startStream(String query){
+        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+        CK = pref.getString("CK", null);
+        CS = pref.getString("CS", null);
+        AT = pref.getString("AT", null);
+        AS = pref.getString("AS", null);
+        ConfigurationBuilder confbuilder = new ConfigurationBuilder();
+        Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
+        t4jusr = new twitter4jUser(conf, this);
+
+        String[] queryArray = new String[1];
+        queryArray[0] = query;
+        t4jusr.filter(queryArray);
+    }
 
 
     public void openAuthActivity(int reqIdToAuth){
