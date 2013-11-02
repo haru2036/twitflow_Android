@@ -1,4 +1,5 @@
-.idea
-.jar
+*.idea
+*.jar
 *.sec
 secrets.xml
+*.apk

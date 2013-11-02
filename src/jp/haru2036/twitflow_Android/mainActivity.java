@@ -68,7 +68,8 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
                 saveAT(token,secret);
                 checkIsAuthorized();
             }else if(requestCode == 1){
-                Toast.makeText(this, R.string.needReboot, Toast.LENGTH_LONG).show();
+                disposeSurfaceAndT4J();
+                checkIsAuthorized();
             }else if(requestCode == 2){
                 String token = data.getStringExtra("access_token");
                 String secret = data.getStringExtra("access_secret");
@@ -96,24 +97,24 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
             }else{
                 Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
             }
-        }
-
-        if(!pref.contains("CK")){
-            if(!pref.getString("CK", "hoge").equals(CK)){
-                isTokenChanged = true;
-                SharedPreferences.Editor prefeditor = pref.edit();
-
-                prefeditor.putString("CK",CK);
-                prefeditor.putString("CS",CS);
-                prefeditor.commit();
-            }
-        }
-        pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        if(!pref.contains("AT") || isTokenChanged){
-            openAuthActivity(0);
         }else{
-            initSurface();
-            startStream();
+            if(!pref.contains("CK")){
+                if(!pref.getString("CK", "hoge").equals(CK)){
+                    isTokenChanged = true;
+                    SharedPreferences.Editor prefeditor = pref.edit();
+
+                    prefeditor.putString("CK",CK);
+                    prefeditor.putString("CS",CS);
+                    prefeditor.commit();
+                }
+            }
+            pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+            if(!pref.contains("AT") || isTokenChanged){
+                openAuthActivity(0);
+            }else{
+                initSurface();
+                startStream();
+            }
         }
     }
 
@@ -201,9 +202,9 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
 
     public void openSettingsActivity(){
         disposeSurfaceAndT4J();
-
         Intent intent = new Intent(this, preferenceActivity.class);
-        startActivityForResult(intent, 1);
+        startActivity(intent);
+        finish();
     }
 
     public void openAboutAppActivity(){
@@ -219,6 +220,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         }
         if(surface != null){
             surface.isRunning = false;
+            surface = null;
         }
     }
 

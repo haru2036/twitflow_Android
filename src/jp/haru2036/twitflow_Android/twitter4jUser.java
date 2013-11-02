@@ -137,6 +137,7 @@ public class twitter4jUser {
 
     public void cleanUp(){
         twitterStream.cleanUp();
+        twitterStream.shutdown();
     }
 
 }

@@ -1,15 +1,11 @@
 package jp.haru2036.twitflow_Android;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.service.dreams.DreamService;
 import android.view.SurfaceView;
-import android.widget.Toast;
 import twitter4j.Status;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
