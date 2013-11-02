@@ -93,6 +93,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
 
             String hashTagString = settingsPreferences.getString("filterTimelineQuery", null);
             if(hashTagString != null){
+                initSurface();
                 startStream(hashTagString);
             }else{
                 Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
