@@ -2,7 +2,6 @@ package jp.haru2036.twitflow_Android;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +12,6 @@ import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import jp.haru2036.twitflow_Android.config.Tokens;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class authenticationActivity extends Activity{
 
@@ -56,20 +52,6 @@ public class authenticationActivity extends Activity{
                 twitter.getOAuthAccessTokenAsync(reqtoken, pin);
             }
         });
-    }
-
-    private Map<String,String> getConsumer(){
-        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        String conskey = pref.getString("CK", null);
-        String conssec = pref.getString("CS", null);
-        if (conskey == null || conssec == null){
-            Log.d("twitter", "consumer is null!");
-            return null;
-        }
-        Map<String,String> consmap = new HashMap<String, String>();
-        consmap.put("consumer_key",conskey);
-        consmap.put("consumer_secret",conssec);
-        return consmap;
     }
 
     private final TwitterListener listener = new TwitterAdapter(){

@@ -26,7 +26,9 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.main);
         actionBar = getActionBar();
-        actionBar.hide();
+        if(actionBar != null) {
+            actionBar.hide();
+        }
         checkIsAuthorized();
     }
 
@@ -80,8 +82,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
     }
 
     private void checkIsAuthorized(){
-        boolean isTokenChanged = false;
-        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
 
         SharedPreferences settingsPreferences= PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -97,7 +97,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
                 Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
             }
         }else{
-            pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+            SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
             if(!pref.contains("AT") || !pref.contains("AS")){
                 openAuthActivity(0);
             }else{
