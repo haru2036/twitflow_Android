@@ -101,10 +101,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
             if(!pref.contains("AT") || !pref.contains("AS")){
                 openAuthActivity(0);
             }else{
-                CK = Tokens.CK;
-                CS = Tokens.CS;
-                AT = pref.getString("AT", null);
-                AS = pref.getString("AS", null);
                 initSurface();
                 startStream();
             }
@@ -121,6 +117,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
     }
 
     private void startStream(){
+        loadTokens();
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
         t4jusr = new twitter4jUser(conf, this);
@@ -129,6 +126,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         }
 
     private void startStream(String query){
+        loadTokens();
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
         t4jusr = new twitter4jUser(conf, this);
@@ -136,6 +134,14 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         String[] queryArray = new String[1];
         queryArray[0] = query;
         t4jusr.filter(queryArray);
+    }
+
+    private void loadTokens(){
+        SharedPreferences pref = getSharedPreferences("haru2036.twitflow",MODE_PRIVATE);
+        CK = Tokens.CK;
+        CS = Tokens.CS;
+        AT = pref.getString("AT", null);
+        AS = pref.getString("AS", null);
     }
 
     public void openAuthActivity(int reqIdToAuth){
