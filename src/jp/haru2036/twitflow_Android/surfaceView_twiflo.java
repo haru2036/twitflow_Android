@@ -10,7 +10,7 @@ import twitter4j.Status;
 import twitter4j.User;
 import java.util.ArrayList;
 
-public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callback, Runnable{
+public class surfaceView_twiflo extends SurfaceView implements SurfaceHolder.Callback, Runnable{
 
     public int textSize, userNameSize, timeAndViaSize;
     private int iconSize;
@@ -28,7 +28,7 @@ public class surfaceView_haru extends SurfaceView implements SurfaceHolder.Callb
 
 
 
-    public surfaceView_haru(Context context, SurfaceView sv, settings setting){
+    public surfaceView_twiflo(Context context, SurfaceView sv, settings setting){
         super(context);
         holder = sv.getHolder();
         holder.addCallback(this);

@@ -3,3 +3,4 @@
 *.sec
 secrets.xml
 *.apk
+Tokens.java

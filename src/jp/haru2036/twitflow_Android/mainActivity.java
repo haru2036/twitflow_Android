@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import android.app.ActionBar;
+import jp.haru2036.twitflow_Android.config.Tokens;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
@@ -16,7 +16,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class mainActivity extends Activity implements StatusInterfaceListener{
     String CK, CS, AT, AS;
-    surfaceView_haru surface;
+    surfaceView_twiflo surface;
     twitter4jUser t4jusr;
     ActionBar actionBar;
 
@@ -81,8 +81,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
 
     private void checkIsAuthorized(){
         boolean isTokenChanged = false;
-        CK = getString(R.string.CK);
-        CS = getString(R.string.CS);
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
 
         SharedPreferences settingsPreferences= PreferenceManager.getDefaultSharedPreferences(this);
@@ -99,27 +97,19 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
                 Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
             }
         }else{
-            if(!pref.contains("CK")){
-                if(!pref.getString("CK", "hoge").equals(CK)){
-                    isTokenChanged = true;
-                    SharedPreferences.Editor prefeditor = pref.edit();
-
-                    prefeditor.putString("CK",CK);
-                    prefeditor.putString("CS",CS);
-                    prefeditor.commit();
-                }
-            }
             pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-            if(!pref.contains("AT") || isTokenChanged){
+            if(!pref.contains("AT") || !pref.contains("AS")){
                 openAuthActivity(0);
             }else{
+                CK = Tokens.CK;
+                CS = Tokens.CS;
+                AT = pref.getString("AT", null);
+                AS = pref.getString("AS", null);
                 initSurface();
                 startStream();
             }
         }
     }
-
-
 
     private void saveAT(String token, String secret){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow",MODE_PRIVATE);
@@ -131,11 +121,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
     }
 
     private void startStream(){
-        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        CK = pref.getString("CK", null);
-        CS = pref.getString("CS", null);
-        AT = pref.getString("AT", null);
-        AS = pref.getString("AS", null);
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
         t4jusr = new twitter4jUser(conf, this);
@@ -144,11 +129,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         }
 
     private void startStream(String query){
-        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        CK = pref.getString("CK", null);
-        CS = pref.getString("CS", null);
-        AT = pref.getString("AT", null);
-        AS = pref.getString("AS", null);
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
         t4jusr = new twitter4jUser(conf, this);
@@ -157,7 +137,6 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
         queryArray[0] = query;
         t4jusr.filter(queryArray);
     }
-
 
     public void openAuthActivity(int reqIdToAuth){
         Intent intent = new Intent(this, authenticationActivity.class);
@@ -180,7 +159,7 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
                 toggleActionBar();
             }
         });
-        surface = new surfaceView_haru(this, sv, loadSettingsFromPreference());
+        surface = new surfaceView_twiflo(this, sv, loadSettingsFromPreference());
 
     }
     public settings loadSettingsFromPreference(){
@@ -203,9 +182,9 @@ public class mainActivity extends Activity implements StatusInterfaceListener{
 
     public void openSettingsActivity(){
         disposeSurfaceAndT4J();
+        finish();
         Intent intent = new Intent(this, preferenceActivity.class);
         startActivity(intent);
-        finish();
     }
 
     public void openAboutAppActivity(){

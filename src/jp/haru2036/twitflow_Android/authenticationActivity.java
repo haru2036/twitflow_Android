@@ -12,6 +12,7 @@ import android.widget.EditText;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import jp.haru2036.twitflow_Android.config.Tokens;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +35,9 @@ public class authenticationActivity extends Activity{
         getatbtn = (Button)findViewById(R.id.button1);
         editText = (EditText)findViewById(R.id.editText);
 
-        Map<String,String> consmap = getConsumer();
 
         twitter.addListener(listener);
-        twitter.setOAuthConsumer(consmap.get("consumer_key"),consmap.get("consumer_secret"));
+        twitter.setOAuthConsumer(Tokens.CK, Tokens.CS);
         twitter.getOAuthRequestTokenAsync();
 
         authbtn.setOnClickListener(new Button.OnClickListener(){
@@ -76,6 +76,7 @@ public class authenticationActivity extends Activity{
         @Override
         public void gotOAuthRequestToken(RequestToken token){
             reqtoken = token;
+            authbtn.setEnabled(true);
         }
 
         @Override
@@ -86,6 +87,11 @@ public class authenticationActivity extends Activity{
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
+        @Override
+        public void onException (TwitterException te, TwitterMethod method) {
+            Log.d("flowstream", te.toString());
+        }
+
     };
 
 

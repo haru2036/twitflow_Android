@@ -66,6 +66,11 @@ public class twitter4jUser {
             }
 
             @Override
+            public void onUnfollow(User user, User user2) {
+
+            }
+
+            @Override
             public void onDirectMessage(DirectMessage directMessage) {
 
             }

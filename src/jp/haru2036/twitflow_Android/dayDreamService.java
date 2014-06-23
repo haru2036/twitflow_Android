@@ -1,11 +1,11 @@
 package jp.haru2036.twitflow_Android;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import jp.haru2036.twitflow_Android.config.Tokens;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.service.dreams.DreamService;
 import android.view.SurfaceView;
+import android.widget.Toast;
 import twitter4j.Status;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
@@ -13,7 +13,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class dayDreamService extends DreamService implements StatusInterfaceListener{
     String CK, CS, AT, AS;
-    surfaceView_haru surface;
+    surfaceView_twiflo surface;
     twitter4jUser t4jusr;
 
     @Override
@@ -38,30 +38,32 @@ public class dayDreamService extends DreamService implements StatusInterfaceList
     public void onDestroy(){
         super.onDestroy();
     }
+
     private void getIsAuth(){
-        boolean isTokenChanged = false;
-        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        if(!pref.contains("CK")){
-            if(!pref.getString("CK", "hoge").equals(CK)){
-                isTokenChanged = true;
+
+        CK = Tokens.CK;
+        CS = Tokens.CS;
+
+        SharedPreferences settingsPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean useHashTag = settingsPreferences.getBoolean("useFilterStream", false);
+
+        if(useHashTag){
+
+            String hashTagString = settingsPreferences.getString("filterTimelineQuery", null);
+            if(hashTagString != null){
+                initSurface();
+                startStream(hashTagString);
+            }else{
+                Toast.makeText(this, getString(R.string.queryIsNull), Toast.LENGTH_LONG).show();
+            }
+            SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+            if (pref.contains("AT")) {
+                initSurface();
+                startStream();
             }
         }
-        pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
-        if(!pref.contains("AT") || isTokenChanged){
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle(R.string.needConfigTitle);
-            alertDialogBuilder.setMessage(R.string.needConfig);
-            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            finish();
-        }else{
-            initSurface();
-            startStream();
-        }
-    }
+     }
 
     private void startStream(){
         SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
@@ -76,11 +78,24 @@ public class dayDreamService extends DreamService implements StatusInterfaceList
 
         }
 
+    private void startStream(String query){
+        SharedPreferences pref = getSharedPreferences("haru2036.twitflow", MODE_PRIVATE);
+        CK = pref.getString("CK", null);
+        CS = pref.getString("CS", null);
+        AT = pref.getString("AT", null);
+        AS = pref.getString("AS", null);
+        ConfigurationBuilder confbuilder = new ConfigurationBuilder();
+        Configuration conf = confbuilder.setOAuthConsumerKey(CK).setOAuthConsumerSecret(CS).setOAuthAccessToken(AT).setOAuthAccessTokenSecret(AS).build();
+        t4jusr = new twitter4jUser(conf, this);
 
+        String[] queryArray = new String[1];
+        queryArray[0] = query;
+        t4jusr.filter(queryArray);
+    }
 
     public void initSurface(){
         SurfaceView sv = (SurfaceView) findViewById(R.id.surfaceView);
-        surface = new surfaceView_haru(this, sv, loadSettingsFromPreference());
+        surface = new surfaceView_twiflo(this, sv, loadSettingsFromPreference());
     }
 
     public settings loadSettingsFromPreference(){
